@@ -1,0 +1,19 @@
+{
+  "properties": [
+    {
+      "name": "casso.cassandra.contact-points",
+      "type": "java.util.List",
+      "description": "Set of all contact point for Apache Cassandra."
+    },
+    {
+      "name": "casso.cassandra.data-center",
+      "type": "java.lang.String",
+      "description": "Name of targeted datacenter for Apache Cassandra database."
+    },
+    {
+      "name": "casso.cassandra.keyspace",
+      "type": "java.lang.String",
+      "description": "Name of targeted keyspace for Apache Cassandra database."
+    }
+  ]
+}
