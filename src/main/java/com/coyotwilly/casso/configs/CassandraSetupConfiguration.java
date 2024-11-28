@@ -14,6 +14,7 @@ import org.springframework.data.cassandra.core.mapping.SimpleUserTypeResolver;
 import org.springframework.data.cassandra.repository.config.EnableCassandraRepositories;
 
 import java.util.List;
+import java.util.Objects;
 
 @Configuration
 @EnableCassandraRepositories
@@ -44,7 +45,7 @@ public class CassandraSetupConfiguration extends AbstractCassandraConfiguration 
     @Override
     protected String getLocalDataCenter() {
         if (datacenter == null || datacenter.isEmpty()) {
-            return super.getLocalDataCenter();
+            return Objects.requireNonNull(super.getLocalDataCenter());
         }
 
         return datacenter;
