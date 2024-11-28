@@ -14,6 +14,16 @@
       "name": "casso.cassandra.keyspace",
       "type": "java.lang.String",
       "description": "Name of targeted keyspace for Apache Cassandra database."
+    },
+    {
+      "name": "casso.cassandra.replication-factor",
+      "type": "java.lang.Integer",
+      "description": "Amount of replicated data."
+    },
+    {
+      "name": "casso.cassandra.dll-auto",
+      "type": "com.coyotwilly.casso.enums.SchemaActionStrategy",
+      "description": "Startup action to be executed during app startup on Apache Cassandra database. Applies to keyspace."
     }
   ]
 }
