@@ -2,6 +2,7 @@ package com.coyotwilly.casso.models;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.cassandra.core.mapping.CassandraType;
 import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
@@ -12,6 +13,7 @@ import java.util.UUID;
 
 @Data
 @Table("users")
+@NoArgsConstructor
 @AllArgsConstructor
 public class User {
     @PrimaryKey

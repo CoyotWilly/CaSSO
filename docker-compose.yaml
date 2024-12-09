@@ -1,0 +1,19 @@
+services:
+  cassandra:
+    image: cassandra:latest
+    deploy:
+      mode: replicated
+      replicas: 3
+    environment:
+      - CASSANDRA_USER=admin
+      - CASSANDRA_PASSWORD=admin
+      - MAX_HEAP_SIZE=128M
+      - HEAP_NEWSIZE=24M
+    volumes:
+      - cassandra-data:/var/lib/cassandra
+#      - ./docs/cassandra.yaml:/etc/cassandra/cassandra.yaml
+# CONFIG PARSER SCREAMS ABOUT INVALID CONFIG
+# NO IDEA WHY I LITERALLY TOOK IT FROM APACHE/CASSANDRA GITHUB REPO
+
+volumes:
+  cassandra-data:
