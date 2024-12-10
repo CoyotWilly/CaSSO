@@ -1,6 +1,6 @@
 package com.coyotwilly.casso.controllers;
 
-import com.coyotwilly.casso.models.User;
+import com.coyotwilly.casso.models.entities.User;
 import com.coyotwilly.casso.services.RowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
