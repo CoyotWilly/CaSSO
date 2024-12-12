@@ -1,5 +1,7 @@
 package com.coyotwilly.casso.mappers;
 
+import com.coyotwilly.casso.utils.AnnotationUtils;
+import com.coyotwilly.casso.utils.ClassUtils;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
 import com.datastax.oss.driver.api.mapper.MapperException;
@@ -15,9 +17,12 @@ public class CqlMapper {
         try {
             T instance = clazz.getDeclaredConstructor().newInstance();
 
-            for (Field field : clazz.getDeclaredFields()) {
+            for (Field field : ClassUtils.getAllFields(clazz)) {
                 field.setAccessible(true);
-                field.set(instance, row.getObject(field.getName()));
+                try {
+                    field.set(instance, row.getObject(AnnotationUtils.getColumnName(field)));
+                } catch (IllegalArgumentException ignored) {
+                }
             }
 
             return instance;
@@ -34,5 +39,18 @@ public class CqlMapper {
         }
 
         return results;
+    }
+
+    public <T> T mapToSingle(ResultSet rs, Class<T> clazz) {
+        List<T> results = new ArrayList<>();
+        for (Row row : rs) {
+            results.add(map(row, clazz));
+        }
+
+        if (results.size() != 1) {
+            throw new AssertionError("Expected exactly one result, got " + results.size());
+        }
+
+        return results.getFirst();
     }
 }

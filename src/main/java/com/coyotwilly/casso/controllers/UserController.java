@@ -1,5 +1,8 @@
 package com.coyotwilly.casso.controllers;
 
+import com.coyotwilly.casso.contracts.ICounterService;
+import com.coyotwilly.casso.dtos.CounterDataDto;
+import com.coyotwilly.casso.models.entities.DeviceSessionCounters;
 import com.coyotwilly.casso.models.entities.User;
 import com.coyotwilly.casso.services.RowService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
     private final RowService row;
+    private final ICounterService<DeviceSessionCounters> counter;
 
     @GetMapping(UserControllerPath.USERS)
     public ResponseEntity<List<User>> test() {
@@ -20,12 +24,15 @@ public class UserController {
 
     @PostMapping(UserControllerPath.USERS)
     public ResponseEntity<User> post() {
-        return ResponseEntity.ok().body(row.insert());
+        counter.create(10L, DeviceSessionCounters.class);
+        return ResponseEntity.ok().build();
     }
 
     @PutMapping(UserControllerPath.USERS)
-    public ResponseEntity<User> put() {
-        return ResponseEntity.ok().body(row.update());
+    public ResponseEntity<CounterDataDto> put() {
+        CounterDataDto c = counter.decrement("mac-address", 10L, DeviceSessionCounters.class);
+
+        return ResponseEntity.ok().body(c);
     }
 
     @DeleteMapping(UserControllerPath.USERS)
@@ -35,6 +42,6 @@ public class UserController {
     }
 
     public static class UserControllerPath {
-        public static final String USERS = "/users";
+        public static final String USERS = "/maintenance/users";
     }
 }

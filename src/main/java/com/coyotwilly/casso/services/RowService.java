@@ -2,7 +2,7 @@ package com.coyotwilly.casso.services;
 
 import com.coyotwilly.casso.consts.UserQueries;
 import com.coyotwilly.casso.mappers.CqlMapper;
-import com.coyotwilly.casso.models.User;
+import com.coyotwilly.casso.models.entities.User;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.cql.BoundStatement;
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;

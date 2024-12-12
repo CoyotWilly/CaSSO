@@ -7,6 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequiredArgsConstructor
 public class SessionController {
     public static class SessionControllerPath {
-        public static final String SESSIONS = "/session";
+        public static final String SESSIONS = "/maintenance/session";
     }
 }

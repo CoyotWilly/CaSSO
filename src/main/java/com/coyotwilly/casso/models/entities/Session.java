@@ -12,7 +12,7 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Data
-@Table("users")
+@Table("sessions")
 @NoArgsConstructor
 @AllArgsConstructor
 public class Session {
@@ -35,4 +35,11 @@ public class Session {
     @Column("expiration_time")
     @CassandraType(type = CassandraType.Name.TIMESTAMP)
     private ZonedDateTime ExpirationTime;
+
+    @Override
+    public String toString() {
+        return String.format("{ @type = %1$s, id = %2$s, sessionId = %3$s, mac address = %4$s, IP address = %5$s, " +
+                        "lock expiration time = %6$s }", getClass().getName(), getEmail(), getSessionId().toString(),
+                getMacAddress(), getIpAddress(), getExpirationTime().toOffsetDateTime().toString());
+    }
 }
