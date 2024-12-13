@@ -1,0 +1,41 @@
+### VARIABLES
+@id = PUT-aaa
+
+### GET ALL USERS
+GET http://localhost:8080/api/casso/maintenance/users
+
+### GET USER BY ID
+GET http://localhost:8080/api/casso/maintenance/users/{{id}}
+
+### CREATES NEW USER
+POST http://localhost:8080/api/casso/maintenance/users
+Content-Type: application/json
+
+{
+  "id": "PUT-aaa",
+  "name": "Route Runner",
+  "login": "Runner",
+  "password": "BeBe3p-@!#"
+}
+
+### UPDATES EXISTING USER
+PUT http://localhost:8080/api/casso/maintenance/users
+Content-Type: application/json
+
+{
+  "id": "PUT-aaa",
+  "name": "CCCx",
+  "login": "AAA",
+  "password": "AAA"
+}
+
+### DELETES EXISTING USER
+DELETE http://localhost:8080/api/casso/maintenance/users/{{id}}
+
+<> 2024-12-13T172951.500.json
+<> 2024-12-13T172906.500.json
+
+
+
+
+

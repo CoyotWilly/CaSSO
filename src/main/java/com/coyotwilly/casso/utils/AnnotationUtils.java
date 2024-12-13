@@ -16,6 +16,10 @@ public class AnnotationUtils {
         throw new IllegalStateException("Class " + clazz.getName() + " is not annotated with @Table");
     }
 
+    public static boolean isPrimaryKey(Field field) {
+        return field.isAnnotationPresent(PrimaryKey.class);
+    }
+
     public static <T> String getPrimaryKeyFieldName(Class<T> clazz) {
         for (Field field : ClassUtils.getAllFields(clazz)) {
             if (field.isAnnotationPresent(PrimaryKey.class) && field.isAnnotationPresent(Column.class)) {
@@ -25,6 +29,24 @@ public class AnnotationUtils {
 
         throw new IllegalStateException("Class " + clazz.getName() +
                 " does not contain field annotated with @PrimaryKey or is not annotation @Column is not present");
+    }
+
+    public static <T> String getPrimaryKeyFieldNameOrDefault(Class<T> clazz) {
+        Field[] fields = ClassUtils.getAllFields(clazz);
+
+        for (Field field : fields) {
+            if (field.isAnnotationPresent(PrimaryKey.class) && field.isAnnotationPresent(Column.class)) {
+                return field.getAnnotation(Column.class).value();
+            } else if (field.isAnnotationPresent(PrimaryKey.class)) {
+                return field.getAnnotation(PrimaryKey.class).value();
+            }
+        }
+
+        if (fields.length > 0) {
+            return fields[0].getName();
+        }
+
+        throw new IllegalStateException("Class " + clazz.getName() + " does not contain any ID like field");
     }
 
     public static <T> String getCounterColumnName(Class<T> clazz) {
@@ -38,12 +60,20 @@ public class AnnotationUtils {
         throw new IllegalStateException("Class " + clazz.getName() + " does not contain any counter field");
     }
 
-    public static <T> String getColumnName(Field field) {
+    public static String getColumnName(Field field) {
         if (field.isAnnotationPresent(Column.class)) {
             return field.getAnnotation(Column.class).value();
         }
 
         throw new IllegalStateException("Class " + field.getClass().getName() + " does not contain field " +
                 field.getName() + " annotated with @Column");
+    }
+
+    public static String getColumnNameOrDefault(Field field) {
+        if (field.isAnnotationPresent(Column.class)) {
+            return field.getAnnotation(Column.class).value();
+        }
+
+        return field.getName();
     }
 }

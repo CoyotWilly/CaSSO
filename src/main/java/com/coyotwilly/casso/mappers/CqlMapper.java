@@ -1,5 +1,6 @@
 package com.coyotwilly.casso.mappers;
 
+import com.coyotwilly.casso.contracts.ICqlMapper;
 import com.coyotwilly.casso.utils.AnnotationUtils;
 import com.coyotwilly.casso.utils.ClassUtils;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
@@ -12,7 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class CqlMapper {
+public class CqlMapper implements ICqlMapper {
+
+    @Override
     public <T> T map(Row row, Class<T> clazz) {
         try {
             T instance = clazz.getDeclaredConstructor().newInstance();
@@ -32,6 +35,7 @@ public class CqlMapper {
         }
     }
 
+    @Override
     public <T> List<T> map(ResultSet rs, Class<T> clazz) {
         List<T> results = new ArrayList<>();
         for (Row row : rs) {
@@ -41,6 +45,7 @@ public class CqlMapper {
         return results;
     }
 
+    @Override
     public <T> T mapToSingle(ResultSet rs, Class<T> clazz) {
         List<T> results = new ArrayList<>();
         for (Row row : rs) {
@@ -52,5 +57,14 @@ public class CqlMapper {
         }
 
         return results.getFirst();
+    }
+
+    @Override
+    public boolean hasFailed(ResultSet rs) {
+        for (Row row : rs) {
+            return !row.getBoolean(0);
+        }
+
+        return true;
     }
 }

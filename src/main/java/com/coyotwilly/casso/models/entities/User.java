@@ -14,6 +14,7 @@ import org.springframework.data.cassandra.core.mapping.Table;
 @AllArgsConstructor
 public class User {
     @PrimaryKey
+    @Column("id")
     @CassandraType(type = CassandraType.Name.TEXT)
     private String id;
 
@@ -31,11 +32,11 @@ public class User {
 
     @Column("is_locked")
     @CassandraType(type = CassandraType.Name.BOOLEAN)
-    private Boolean isLocked;
+    private Boolean isLocked = false;
 
     @Override
     public String toString() {
-        return String.format("{ @type = %1$s, id = %2$s, name = %3$s, login = %4%s, password HAM-AC = %5%s, " +
+        return String.format("{ @type = %1$s, id = %2$s, name = %3$s, login = %4$s, password HAM-AC = %5$s, " +
                         "lock status = %6$b }", getClass().getName(), getId(), getName(), getLogin(), getPassword(),
                 getIsLocked());
     }
