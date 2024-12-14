@@ -24,6 +24,16 @@
       "name": "casso.cassandra.dll-auto",
       "type": "com.coyotwilly.casso.enums.SchemaActionStrategy",
       "description": "Startup action to be executed during app startup on Apache Cassandra database. Applies to keyspace."
+    },
+    {
+      "name": "casso.password.algorithm",
+      "type": "java.lang.String",
+      "description": "Password encryption algorithm. To get possible options go see https://docs.oracle.com/javase/8/docs/technotes/guides/security/StandardNames.html#Mac."
+    },
+    {
+      "name": "casso.password.key",
+      "type": "java.lang.String",
+      "description": "Password encryption seeding key."
     }
   ]
 }

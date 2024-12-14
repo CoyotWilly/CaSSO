@@ -1,8 +1,8 @@
 package com.coyotwilly.casso.services;
 
 import com.coyotwilly.casso.consts.CounterQueries;
-import com.coyotwilly.casso.contracts.ICounterService;
-import com.coyotwilly.casso.contracts.ICqlMapper;
+import com.coyotwilly.casso.contracts.services.ICounterService;
+import com.coyotwilly.casso.contracts.services.ICqlMapper;
 import com.coyotwilly.casso.dtos.CounterDataDto;
 import com.coyotwilly.casso.models.abstracts.SessionCounters;
 import com.coyotwilly.casso.utils.AnnotationUtils;

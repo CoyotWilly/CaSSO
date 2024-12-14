@@ -28,7 +28,7 @@ public class AnnotationUtils {
         }
 
         throw new IllegalStateException("Class " + clazz.getName() +
-                " does not contain field annotated with @PrimaryKey or is not annotation @Column is not present");
+                " does not contain field annotated with @PrimaryKey or @Column annotation is not present");
     }
 
     public static <T> String getPrimaryKeyFieldNameOrDefault(Class<T> clazz) {
@@ -53,11 +53,22 @@ public class AnnotationUtils {
         for (Field field : ClassUtils.getAllFields(clazz)) {
             if (field.isAnnotationPresent(Column.class) && field.isAnnotationPresent(CassandraType.class) &&
             field.getAnnotation(CassandraType.class).type() == CassandraType.Name.COUNTER) {
-                return field.getName();
+                return field.getAnnotation(Column.class).value();
             }
         }
 
         throw new IllegalStateException("Class " + clazz.getName() + " does not contain any counter field");
+    }
+
+    public static <T> String getUuidColumnName(Class<T> clazz) {
+        for (Field field : ClassUtils.getAllFields(clazz)) {
+            if (field.isAnnotationPresent(Column.class) && field.isAnnotationPresent(CassandraType.class) &&
+                    field.getAnnotation(CassandraType.class).type() == CassandraType.Name.UUID) {
+                return field.getAnnotation(Column.class).value();
+            }
+        }
+
+        throw new IllegalStateException("Class " + clazz.getName() + " does not contain any UUID field");
     }
 
     public static String getColumnName(Field field) {

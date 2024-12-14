@@ -1,8 +1,8 @@
 package com.coyotwilly.casso.services;
 
 import com.coyotwilly.casso.consts.UserQueries;
-import com.coyotwilly.casso.contracts.ICqlMapper;
-import com.coyotwilly.casso.contracts.IUserService;
+import com.coyotwilly.casso.contracts.services.ICqlMapper;
+import com.coyotwilly.casso.contracts.services.IUserService;
 import com.coyotwilly.casso.exceptions.EntityNotFoundException;
 import com.coyotwilly.casso.models.entities.User;
 import com.coyotwilly.casso.utils.AnnotationUtils;
@@ -23,13 +23,14 @@ public class UserService implements IUserService {
     private final Class<User> clazz = User.class;
     private final CqlSession cql;
     private final ICqlMapper cqlMapper;
+    private final PasswordService passwordService;
 
     @Override
     public List<User> getUsers() {
         PreparedStatement statement = cql.prepare(UserQueries.SELECT_ALL_USERS);
         BoundStatement state = statement.bind();
 
-        return cqlMapper.map(cql.execute(state), User.class);
+        return cqlMapper.map(cql.execute(state), clazz);
     }
 
     @Override
@@ -42,7 +43,7 @@ public class UserService implements IUserService {
                 AnnotationUtils.getTableName(clazz), AnnotationUtils.getPrimaryKeyFieldName(clazz)));
         BoundStatement state = statement.bind(id);
 
-        return cqlMapper.mapToSingle(cql.execute(state), User.class);
+        return cqlMapper.mapToSingle(cql.execute(state), clazz);
     }
 
     @Override
@@ -50,6 +51,7 @@ public class UserService implements IUserService {
         if (user.getId() == null || user.getId().isEmpty()) {
             user.setId(UUID.randomUUID().toString());
         }
+        user.setPassword(passwordService.encryptPassword(user.getPassword()));
 
         PreparedStatement statement = cql.prepare(CqlModificationUtils.insert(clazz));
         BoundStatement state = statement.bind(user.getId(), user.getName(), user.getLogin(),

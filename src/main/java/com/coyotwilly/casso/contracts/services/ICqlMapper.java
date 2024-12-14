@@ -1,4 +1,4 @@
-package com.coyotwilly.casso.contracts;
+package com.coyotwilly.casso.contracts.services;
 
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;

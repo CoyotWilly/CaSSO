@@ -32,8 +32,6 @@ Content-Type: application/json
 ### DELETES EXISTING USER
 DELETE http://localhost:8080/api/casso/maintenance/users/{{id}}
 
-<> 2024-12-13T172951.500.json
-<> 2024-12-13T172906.500.json
 
 
 

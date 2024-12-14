@@ -1,6 +1,6 @@
 package com.coyotwilly.casso.mappers;
 
-import com.coyotwilly.casso.contracts.ICqlMapper;
+import com.coyotwilly.casso.contracts.services.ICqlMapper;
 import com.coyotwilly.casso.utils.AnnotationUtils;
 import com.coyotwilly.casso.utils.ClassUtils;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
@@ -53,7 +53,7 @@ public class CqlMapper implements ICqlMapper {
         }
 
         if (results.size() != 1) {
-            throw new AssertionError("Expected exactly one result, got " + results.size());
+            throw new AssertionError("Expected exactly 1 result, got " + results.size());
         }
 
         return results.getFirst();

@@ -1,0 +1,38 @@
+### VARIABLES
+@id = 66dd81c9-c4de-4d88-983a-4e00a396dace
+@email = route.runner@example.com
+
+### GET ALL SESSIONS
+GET http://localhost:8080/api/casso/maintenance/sessions
+
+### GET SESSION BY EMAIL
+GET http://localhost:8080/api/casso/maintenance/sessions/{{email}}
+
+### GET SESSION BY ID
+GET http://localhost:8080/api/casso/maintenance/sessions/{{id}}
+
+### CREATES NEW USER
+POST http://localhost:8080/api/casso/maintenance/sessions
+Content-Type: application/json
+
+{
+  "email": "route.runner@example.com",
+  "macAddress": "00-B0-D0-63-C2-26",
+  "ipAddress": "192.168.1.1"
+}
+
+### UPDATES EXISTING USER
+PUT http://localhost:8080/api/casso/maintenance/sessions
+Content-Type: application/json
+
+{
+  "email": "route.runner@example.com",
+  "macAddress": "AA-B0-D0-63-C2-26",
+  "ipAddress": "192.168.1.1"
+}
+
+### DELETES EXISTING USER BY EMAIL
+DELETE http://localhost:8080/api/casso/maintenance/sessions/{{email}}
+
+### DELETES EXISTING USER BY ID
+DELETE http://localhost:8080/api/casso/maintenance/sessions/{{id}}

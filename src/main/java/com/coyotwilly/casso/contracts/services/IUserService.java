@@ -1,4 +1,4 @@
-package com.coyotwilly.casso.contracts;
+package com.coyotwilly.casso.contracts.services;
 
 import com.coyotwilly.casso.models.entities.User;
 

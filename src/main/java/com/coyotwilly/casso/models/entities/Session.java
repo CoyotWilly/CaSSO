@@ -17,12 +17,13 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Session {
     @PrimaryKey
+    @Column("email")
     @CassandraType(type = CassandraType.Name.TEXT)
     private String email;
 
     @Column("session_id")
     @CassandraType(type = CassandraType.Name.UUID)
-    private UUID sessionId;
+    private UUID sessionId = UUID.randomUUID();
 
     @Column("mac_address")
     @CassandraType(type = CassandraType.Name.VARCHAR)
@@ -34,12 +35,12 @@ public class Session {
 
     @Column("expiration_time")
     @CassandraType(type = CassandraType.Name.TIMESTAMP)
-    private ZonedDateTime ExpirationTime;
+    private ZonedDateTime expirationTime;
 
     @Override
     public String toString() {
         return String.format("{ @type = %1$s, id = %2$s, sessionId = %3$s, mac address = %4$s, IP address = %5$s, " +
                         "lock expiration time = %6$s }", getClass().getName(), getEmail(), getSessionId().toString(),
-                getMacAddress(), getIpAddress(), getExpirationTime().toOffsetDateTime().toString());
+                getMacAddress(), getIpAddress(), getExpirationTime().toOffsetDateTime());
     }
 }
