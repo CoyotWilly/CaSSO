@@ -1,0 +1,27 @@
+### VARIABLES
+@id = CoyotWilly
+@lockType = user
+
+### GET session lock data by id
+GET http://localhost:8080/api/casso/maintenance/session-locks-data/{{id}}?lockType={{lockType}}
+
+### POST create new lock
+POST http://localhost:8080/api/casso/maintenance/session-locks-data?lockType={{lockType}}
+Content-Type: application/json
+
+{
+  "id": "CoyotWilly",
+  "expirationTime": "2019-01-21T05:36:25.966Z"
+}
+
+### PUT update existing lock data
+PUT http://localhost:8080/api/casso/maintenance/session-locks-data?lockType={{lockType}}
+Content-Type: application/json
+
+{
+  "id": "CoyotWilly",
+  "expirationTime": "2022-02-22T22:36:25.966Z"
+}
+
+### DELETE existing lock data
+DELETE http://localhost:8080/api/casso/maintenance/session-locks-data/{{id}}?lockType={{lockType}}

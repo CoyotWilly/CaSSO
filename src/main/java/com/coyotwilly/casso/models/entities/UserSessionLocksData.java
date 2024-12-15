@@ -8,12 +8,25 @@ import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
-@Table("user_session_locks_data")
+import java.time.ZonedDateTime;
+
 @NoArgsConstructor
 @AllArgsConstructor
+@Table("user_session_locks_data")
 public class UserSessionLocksData extends SessionLocksData {
+
+    public UserSessionLocksData(String id, ZonedDateTime dateTime) {
+        email = id;
+        lockExpirationTime = dateTime;
+    }
+
     @PrimaryKey
     @Column("email")
     @CassandraType(type = CassandraType.Name.VARCHAR)
     private String email;
+
+    @Override
+    public String getEntityId() {
+        return email;
+    }
 }

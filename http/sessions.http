@@ -2,16 +2,16 @@
 @id = 66dd81c9-c4de-4d88-983a-4e00a396dace
 @email = route.runner@example.com
 
-### GET ALL SESSIONS
+### GET all sessions
 GET http://localhost:8080/api/casso/maintenance/sessions
 
-### GET SESSION BY EMAIL
+### GET session by email
 GET http://localhost:8080/api/casso/maintenance/sessions/{{email}}
 
-### GET SESSION BY ID
+### GET session by id
 GET http://localhost:8080/api/casso/maintenance/sessions/{{id}}
 
-### CREATES NEW USER
+### POST create new user
 POST http://localhost:8080/api/casso/maintenance/sessions
 Content-Type: application/json
 
@@ -21,7 +21,7 @@ Content-Type: application/json
   "ipAddress": "192.168.1.1"
 }
 
-### UPDATES EXISTING USER
+### PUT update new user
 PUT http://localhost:8080/api/casso/maintenance/sessions
 Content-Type: application/json
 
@@ -31,8 +31,8 @@ Content-Type: application/json
   "ipAddress": "192.168.1.1"
 }
 
-### DELETES EXISTING USER BY EMAIL
+### DELETE existing user by email
 DELETE http://localhost:8080/api/casso/maintenance/sessions/{{email}}
 
-### DELETES EXISTING USER BY ID
+### DELETE existing user by id
 DELETE http://localhost:8080/api/casso/maintenance/sessions/{{id}}

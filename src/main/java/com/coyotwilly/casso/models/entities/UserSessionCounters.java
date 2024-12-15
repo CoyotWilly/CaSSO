@@ -8,9 +8,9 @@ import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
-@Table("user_session_counter_locks")
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@Table("user_session_counter_locks")
 public class UserSessionCounters extends SessionCounters {
     @PrimaryKey
     @Column("email")

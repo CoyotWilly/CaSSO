@@ -1,7 +1,8 @@
 package com.coyotwilly.casso.services;
 
+import com.coyotwilly.casso.consts.GenericQueries;
 import com.coyotwilly.casso.consts.UserQueries;
-import com.coyotwilly.casso.contracts.services.ICqlMapper;
+import com.coyotwilly.casso.contracts.mappers.ICqlMapper;
 import com.coyotwilly.casso.contracts.services.IUserService;
 import com.coyotwilly.casso.exceptions.EntityNotFoundException;
 import com.coyotwilly.casso.models.entities.User;
@@ -81,7 +82,7 @@ public class UserService implements IUserService {
             throw new IllegalArgumentException("id cannot be null or empty");
         }
 
-        PreparedStatement statement = cql.prepare(String.format(UserQueries.DELETE_USER_BY_ID,
+        PreparedStatement statement = cql.prepare(String.format(GenericQueries.GENERIC_DELETE,
                 AnnotationUtils.getTableName(clazz), AnnotationUtils.getPrimaryKeyFieldName(clazz)));
         BoundStatement state = statement.bind(id);
         ResultSet rs = cql.execute(state);

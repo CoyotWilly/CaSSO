@@ -1,7 +1,8 @@
 package com.coyotwilly.casso.services;
 
+import com.coyotwilly.casso.consts.GenericQueries;
 import com.coyotwilly.casso.consts.SessionQueries;
-import com.coyotwilly.casso.contracts.services.ICqlMapper;
+import com.coyotwilly.casso.contracts.mappers.ICqlMapper;
 import com.coyotwilly.casso.contracts.services.ISessionService;
 import com.coyotwilly.casso.exceptions.EntityNotFoundException;
 import com.coyotwilly.casso.models.entities.Session;
@@ -77,11 +78,7 @@ public class SessionService implements ISessionService {
         PreparedStatement statement = cql.prepare(CqlModificationUtils.update(clazz));
         BoundStatement state = statement.bind(session.getSessionId(), session.getMacAddress(),
                 session.getIpAddress(), session.getExpirationTime(), session.getEmail());
-
-        ResultSet rs = cql.execute(state);
-        if (cqlMapper.hasFailed(rs)) {
-            throw new EntityNotFoundException(clazz.getSimpleName());
-        }
+        executeWithOperationResultCheck(state);
 
         return resultSession(session);
     }
@@ -92,11 +89,11 @@ public class SessionService implements ISessionService {
             throw new IllegalArgumentException("email cannot be null or empty");
         }
 
-        PreparedStatement statement = cql.prepare(String.format(SessionQueries.DELETE_SESSION_BY_EMAIL,
+        PreparedStatement statement = cql.prepare(String.format(GenericQueries.GENERIC_DELETE,
                 AnnotationUtils.getTableName(clazz), AnnotationUtils.getPrimaryKeyFieldName(clazz)));
         BoundStatement state = statement.bind(email);
 
-        checkOperationResult(state);
+        executeWithOperationResultCheck(state);
     }
 
     @Override
@@ -116,7 +113,7 @@ public class SessionService implements ISessionService {
         return getSessionById(session.getSessionId());
     }
 
-    private void checkOperationResult(BoundStatement state) {
+    private void executeWithOperationResultCheck(BoundStatement state) {
         ResultSet rs = cql.execute(state);
 
         if (cqlMapper.hasFailed(rs)) {

@@ -9,9 +9,9 @@ import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
 
-@Table("device_session_counter_locks")
 @NoArgsConstructor
 @AllArgsConstructor
+@Table("device_session_counter_locks")
 public class DeviceSessionCounters extends SessionCounters {
     @PrimaryKey
     @Column("mac_address")

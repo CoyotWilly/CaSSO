@@ -11,4 +11,6 @@ public abstract class SessionLocksData {
     @Column("lock_expiration_time")
     @CassandraType(type = CassandraType.Name.TIMESTAMP)
     protected ZonedDateTime lockExpirationTime;
+
+    public abstract String getEntityId();
 }

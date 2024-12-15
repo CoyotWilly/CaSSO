@@ -101,4 +101,6 @@ public class CassandraSetupConfiguration extends AbstractCassandraConfiguration 
     public String[] getEntityBasePackages() {
         return new String[] { Resources.ENTITIES_PACKAGE };
     }
+
+
 }

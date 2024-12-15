@@ -1,14 +1,17 @@
 package com.coyotwilly.casso.mappers;
 
-import com.coyotwilly.casso.contracts.services.ICqlMapper;
+import com.coyotwilly.casso.contracts.mappers.ICqlMapper;
 import com.coyotwilly.casso.utils.AnnotationUtils;
 import com.coyotwilly.casso.utils.ClassUtils;
 import com.datastax.oss.driver.api.core.cql.ResultSet;
 import com.datastax.oss.driver.api.core.cql.Row;
+import com.datastax.oss.driver.api.core.type.DataTypes;
 import com.datastax.oss.driver.api.mapper.MapperException;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Field;
+import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +26,16 @@ public class CqlMapper implements ICqlMapper {
             for (Field field : ClassUtils.getAllFields(clazz)) {
                 field.setAccessible(true);
                 try {
-                    field.set(instance, row.getObject(AnnotationUtils.getColumnName(field)));
+                    if (row.getType(AnnotationUtils.getColumnName(field)) == DataTypes.TIMESTAMP) {
+                        Instant instant = row.getInstant(AnnotationUtils.getColumnName(field));
+                        if (instant == null) {
+                            continue;
+                        }
+
+                        field.set(instance, instant.atZone(ZoneOffset.UTC));
+                    } else {
+                        field.set(instance, row.getObject(AnnotationUtils.getColumnName(field)));
+                    }
                 } catch (IllegalArgumentException ignored) {
                 }
             }

@@ -3,10 +3,7 @@ package com.coyotwilly.casso.models.entities;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.data.cassandra.core.mapping.CassandraType;
-import org.springframework.data.cassandra.core.mapping.Column;
-import org.springframework.data.cassandra.core.mapping.PrimaryKey;
-import org.springframework.data.cassandra.core.mapping.Table;
+import org.springframework.data.cassandra.core.mapping.*;
 
 import java.time.ZonedDateTime;
 import java.util.UUID;
@@ -21,6 +18,7 @@ public class Session {
     @CassandraType(type = CassandraType.Name.TEXT)
     private String email;
 
+    @Indexed
     @Column("session_id")
     @CassandraType(type = CassandraType.Name.UUID)
     private UUID sessionId = UUID.randomUUID();

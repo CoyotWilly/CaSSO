@@ -1,8 +1,8 @@
 package com.coyotwilly.casso.services;
 
 import com.coyotwilly.casso.consts.CounterQueries;
+import com.coyotwilly.casso.contracts.mappers.ICqlMapper;
 import com.coyotwilly.casso.contracts.services.ICounterService;
-import com.coyotwilly.casso.contracts.services.ICqlMapper;
 import com.coyotwilly.casso.dtos.CounterDataDto;
 import com.coyotwilly.casso.models.abstracts.SessionCounters;
 import com.coyotwilly.casso.utils.AnnotationUtils;
@@ -18,6 +18,16 @@ import org.springframework.stereotype.Service;
 public class CounterService<T extends SessionCounters> implements ICounterService<T> {
     private final CqlSession cql;
     private final ICqlMapper cqlMapper;
+
+    @Override
+    public T getCurrentCounterValue(String id, Class<T> clazz) {
+        PreparedStatement statement = cql.prepare(
+                String.format(CounterQueries.GET_COUNTER_VALUE,
+                        AnnotationUtils.getTableName(clazz), AnnotationUtils.getPrimaryKeyFieldNameOrDefault(clazz)));
+        BoundStatement state = statement.bind(id);
+
+        return cqlMapper.mapToSingle(cql.execute(state), clazz);
+    }
 
     @Override
     public CounterDataDto create(String id, Long value, Class<T> clazz) {
@@ -61,14 +71,5 @@ public class CounterService<T extends SessionCounters> implements ICounterServic
         cqlMapper.map(rs, clazz);
 
         return new CounterDataDto(id, getCurrentCounterValue(id, clazz).getCounter());
-    }
-
-    private T getCurrentCounterValue(String id, Class<T> clazz) {
-        PreparedStatement statement = cql.prepare(
-                String.format("SELECT counter FROM %s WHERE %s = ?",
-                        AnnotationUtils.getTableName(clazz), AnnotationUtils.getPrimaryKeyFieldNameOrDefault(clazz)));
-        BoundStatement state = statement.bind(id);
-
-        return cqlMapper.mapToSingle(cql.execute(state), clazz);
     }
 }
