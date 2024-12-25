@@ -15,12 +15,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CounterService<T extends SessionCounters> implements ICounterService<T> {
+public class CounterService implements ICounterService {
     private final CqlSession cql;
     private final ICqlMapper cqlMapper;
 
     @Override
-    public T getCurrentCounterValue(String id, Class<T> clazz) {
+    public <T extends SessionCounters> T getCurrentCounterValue(String id, Class<T> clazz) {
         PreparedStatement statement = cql.prepare(
                 String.format(CounterQueries.GET_COUNTER_VALUE,
                         AnnotationUtils.getTableName(clazz), AnnotationUtils.getPrimaryKeyFieldNameOrDefault(clazz)));
@@ -30,7 +30,7 @@ public class CounterService<T extends SessionCounters> implements ICounterServic
     }
 
     @Override
-    public CounterDataDto create(String id, Long value, Class<T> clazz) {
+    public <T extends SessionCounters> CounterDataDto create(String id, Long value, Class<T> clazz) {
         PreparedStatement statement = cql.prepare(
                 String.format(CounterQueries.CREATE_COUNTER_QUERY,
                         AnnotationUtils.getTableName(clazz),
@@ -47,7 +47,7 @@ public class CounterService<T extends SessionCounters> implements ICounterServic
     }
 
     @Override
-    public CounterDataDto increment(String id, Long amount, Class<T> clazz) {
+    public <T extends SessionCounters> CounterDataDto increment(String id, Long amount, Class<T> clazz) {
         PreparedStatement statement = cql.prepare(
                 String.format(CounterQueries.INCREMENT_COUNTER_QUERY,
                         AnnotationUtils.getTableName(clazz),
@@ -60,7 +60,7 @@ public class CounterService<T extends SessionCounters> implements ICounterServic
     }
 
     @Override
-    public CounterDataDto decrement(String id, Long amount, Class<T> clazz) {
+    public <T extends SessionCounters> CounterDataDto decrement(String id, Long amount, Class<T> clazz) {
         PreparedStatement statement = cql.prepare(
                 String.format(CounterQueries.DECREMENT_COUNTER_QUERY,
                         AnnotationUtils.getTableName(clazz),
