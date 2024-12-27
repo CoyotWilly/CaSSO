@@ -25,9 +25,9 @@ public class SessionController implements ISessionController {
     @Override
     public ResponseEntity<Session> getSession(String id) {
         try {
-            return ResponseEntity.ok(sessionService.getSessionById(UUID.fromString(id)));
+            return ResponseEntity.ok(sessionService.getSessionOrDefaultById(UUID.fromString(id)));
         } catch (IllegalArgumentException ignored) {
-            return ResponseEntity.ok(sessionService.getSessionByEmail(id));
+            return ResponseEntity.ok(sessionService.getSessionOrDefaultByEmail(id));
         }
     }
 

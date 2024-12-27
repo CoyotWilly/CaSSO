@@ -59,16 +59,29 @@ public class CqlMapper implements ICqlMapper {
 
     @Override
     public <T> T mapToSingle(ResultSet rs, Class<T> clazz) {
+        return mapToSingle(rs, clazz, false);
+    }
+
+    @Override
+    public <T> T mapToSingle(ResultSet rs, Class<T> clazz, Boolean withCheck) {
         List<T> results = new ArrayList<>();
         for (Row row : rs) {
             results.add(map(row, clazz));
         }
 
-        if (results.size() != 1) {
+        if (results.size() != 1 && withCheck) {
             throw new AssertionError("Expected exactly 1 result, got " + results.size());
         }
 
-        return results.getFirst();
+        if (withCheck) {
+            return results.getFirst();
+        }
+
+        if (!results.isEmpty()) {
+            return results.getLast();
+        } else {
+            return null;
+        }
     }
 
     @Override

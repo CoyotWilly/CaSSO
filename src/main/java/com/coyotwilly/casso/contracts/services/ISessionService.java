@@ -7,9 +7,12 @@ import java.util.UUID;
 
 public interface ISessionService {
     List<Session> getSessions();
-    Session getSessionByEmail(String email);
-    Session getSessionById(UUID sessionId);
-    Session getSessionByMacAddress(String macAddress);
+    Session getSessionByEmail(String email, Boolean withCheck);
+    Session getSessionOrDefaultByEmail(String email);
+    Session getSessionById(UUID sessionId, Boolean withCheck);
+    Session getSessionOrDefaultById(UUID sessionId);
+    Session getSessionByMacAddress(String macAddress, Boolean withCheck);
+    Session getSessionOrDefaultByMacAddress(String macAddress);
     Session createSession(Session session);
     Session updateSession(Session session);
     void deleteSessionByEmail(String email);

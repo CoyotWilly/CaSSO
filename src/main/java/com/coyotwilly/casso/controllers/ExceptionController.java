@@ -1,6 +1,7 @@
 package com.coyotwilly.casso.controllers;
 
 import com.coyotwilly.casso.dtos.ErrorResponse;
+import com.coyotwilly.casso.exceptions.CredentialTypeException;
 import com.coyotwilly.casso.exceptions.EntityNotFoundException;
 import com.datastax.oss.driver.api.mapper.MapperException;
 import jakarta.security.auth.message.AuthException;
@@ -61,7 +62,7 @@ public class ExceptionController {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> entityNotFoundExceptions(EntityNotFoundException e) {
         ErrorResponse response = new ErrorResponse(e.getClass().getSimpleName(),
-                e.getMessage() + "does not exists or has been deleted",
+                e.getMessage() + " does not exists or has been deleted",
                 HttpStatus.NOT_FOUND.value());
 
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
@@ -74,5 +75,14 @@ public class ExceptionController {
                 HttpStatus.FORBIDDEN.value());
 
         return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(CredentialTypeException.class)
+    public ResponseEntity<ErrorResponse> invalidCredentials(CredentialTypeException e) {
+        ErrorResponse response = new ErrorResponse(e.getClass().getSimpleName(),
+                "Invalid type: " + e.getMessage() + "passed as credential type",
+                HttpStatus.BAD_REQUEST.value());
+
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

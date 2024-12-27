@@ -1,6 +1,7 @@
 package com.coyotwilly.casso.services;
 
 import com.coyotwilly.casso.consts.GenericQueries;
+import com.coyotwilly.casso.consts.Resources;
 import com.coyotwilly.casso.consts.SessionQueries;
 import com.coyotwilly.casso.contracts.mappers.ICqlMapper;
 import com.coyotwilly.casso.contracts.services.ISessionService;
@@ -34,7 +35,12 @@ public class SessionService implements ISessionService {
     }
 
     @Override
-    public Session getSessionByEmail(String email) {
+    public Session getSessionOrDefaultByEmail(String email) {
+        return getSessionByEmail(email, false);
+    }
+
+    @Override
+    public Session getSessionByEmail(String email, Boolean withCheck) {
         if (email == null || email.isEmpty()) {
             throw new IllegalArgumentException("email cannot be null or empty");
         }
@@ -43,11 +49,16 @@ public class SessionService implements ISessionService {
                 AnnotationUtils.getTableName(clazz), AnnotationUtils.getPrimaryKeyFieldName(clazz)));
         BoundStatement state = statement.bind(email);
 
-        return cqlMapper.mapToSingle(cql.execute(state), clazz);
+        return cqlMapper.mapToSingle(cql.execute(state), clazz, withCheck);
     }
 
     @Override
-    public Session getSessionById(UUID sessionId) {
+    public Session getSessionOrDefaultById(UUID sessionId) {
+        return getSessionById(sessionId, false);
+    }
+
+    @Override
+    public Session getSessionById(UUID sessionId, Boolean withCheck) {
         if (sessionId == null) {
             throw new IllegalArgumentException("id cannot be null or empty");
         }
@@ -56,17 +67,22 @@ public class SessionService implements ISessionService {
                 AnnotationUtils.getTableName(clazz), AnnotationUtils.getUuidColumnName(clazz)));
         BoundStatement state = statement.bind(sessionId);
 
-        return cqlMapper.mapToSingle(cql.execute(state), clazz);
+        return cqlMapper.mapToSingle(cql.execute(state), clazz, withCheck);
     }
 
     @Override
-    public Session getSessionByMacAddress(String macAddress) {
+    public Session getSessionOrDefaultByMacAddress(String macAddress) {
+        return getSessionByMacAddress(macAddress, false);
+    }
+
+    @Override
+    public Session getSessionByMacAddress(String macAddress, Boolean withCheck) {
         if (macAddress == null || macAddress.isEmpty()) {
             throw new IllegalArgumentException("mac address cannot be null or empty");
         }
 
         PreparedStatement statement = cql.prepare(String.format(SessionQueries.SELECT_SESSION,
-                AnnotationUtils.getTableName(clazz), AnnotationUtils.getPrimaryKeyFieldName(clazz)));
+                AnnotationUtils.getTableName(clazz), Resources.MAC_ADDRESS));
         BoundStatement state = statement.bind(macAddress);
 
         return cqlMapper.mapToSingle(cql.execute(state), clazz);
@@ -80,7 +96,7 @@ public class SessionService implements ISessionService {
 
         PreparedStatement statement = cql.prepare(CqlModificationUtils.insert(clazz));
         BoundStatement state = statement.bind(session.getEmail(), session.getSessionId(), session.getMacAddress(),
-                session.getIpAddress(), session.getExpirationTime());
+                session.getIpAddress(), session.getExpirationTime().toInstant());
         cql.execute(state);
 
         return resultSession(session);
@@ -114,7 +130,7 @@ public class SessionService implements ISessionService {
         if (sessionId == null) {
             throw new IllegalArgumentException("id cannot be null or empty");
         }
-        Session session = getSessionById(sessionId);
+        Session session = getSessionById(sessionId, true);
         deleteSessionByEmail(session.getEmail());
     }
 
@@ -123,16 +139,16 @@ public class SessionService implements ISessionService {
         if (macAddress == null) {
             throw new IllegalArgumentException("id cannot be null or empty");
         }
-//        Session session = getSessionById(sessionId);
-//        deleteSessionByEmail(session.getMa());
+        Session session = getSessionByMacAddress(macAddress, true);
+        deleteSessionByEmail(session.getEmail());
     }
 
     private Session resultSession(Session session) {
         if (session.getEmail() != null && !session.getEmail().isEmpty()) {
-            return getSessionByEmail(session.getEmail());
+            return getSessionByEmail(session.getEmail(), true);
         }
 
-        return getSessionById(session.getSessionId());
+        return getSessionById(session.getSessionId(), true);
     }
 
     private void executeWithOperationResultCheck(BoundStatement state) {

@@ -1,22 +1,28 @@
 package com.coyotwilly.casso.controllers;
 
 import com.coyotwilly.casso.contracts.controllers.IDemoController;
+import com.coyotwilly.casso.contracts.controllers.ISessionController;
 import com.coyotwilly.casso.contracts.services.ICounterService;
 import com.coyotwilly.casso.contracts.services.ISessionLockDataService;
 import com.coyotwilly.casso.contracts.services.ISessionService;
 import com.coyotwilly.casso.contracts.services.IUserService;
 import com.coyotwilly.casso.dtos.CredentialDto;
 import com.coyotwilly.casso.dtos.FullLogoutDto;
+import com.coyotwilly.casso.dtos.ValidationResult;
+import com.coyotwilly.casso.exceptions.CredentialTypeException;
 import com.coyotwilly.casso.models.entities.*;
 import com.coyotwilly.casso.services.PasswordService;
 import jakarta.security.auth.message.AuthException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.UUID;
 
 @RestController
 @RequestMapping
@@ -63,7 +69,7 @@ public class DemoController implements IDemoController {
             throw new AuthException();
         }
 
-        ZonedDateTime now = ZonedDateTime.now();
+        ZonedDateTime now = ZonedDateTime.ofInstant(ZonedDateTime.now().toInstant(), ZoneOffset.UTC);
 
         if (userLock.getLockExpirationTime() != null &&
                 userSessionCounter.getCounter() > permittedAttempts && userLock.getLockExpirationTime().isBefore(now)) {
@@ -85,23 +91,62 @@ public class DemoController implements IDemoController {
         counterService.decrement(credential.macAddress(), userSessionCounter.getCounter(), DeviceSessionCounters.class);
         Session session = sessionService.createSession(Session.builder()
                         .email(credential.login())
+                        .sessionId(UUID.randomUUID())
                         .macAddress(credential.macAddress())
-                        .expirationTime(ZonedDateTime.now().plusHours(duration))
+                        .expirationTime(now.plusHours(duration))
                         .build());
 
         return ResponseEntity.ok().body(session);
     }
 
-    @PostMapping("/logout/{id}")
-    public ResponseEntity<Session> logout(@PathVariable Long id) {
-        return ResponseEntity.ok().build();
+    @GetMapping("/validate/{type}/{id}")
+    public ResponseEntity<ValidationResult> validate(@PathVariable String type, @PathVariable String id) throws CredentialTypeException {
+        Session session = switch (type) {
+            case "login" -> sessionService.getSessionOrDefaultByEmail(id);
+            case "device" -> sessionService.getSessionOrDefaultByMacAddress(id);
+            case "uuid" -> sessionService.getSessionOrDefaultById(UUID.fromString(id));
+            default -> throw new CredentialTypeException(type);
+        };
+
+        if (session != null && session.getExpirationTime()
+                .isAfter(ZonedDateTime.ofInstant(ZonedDateTime.now().toInstant(), ZoneOffset.UTC))) {
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.EXPIRES, session.getExpirationTime().toString())
+                    .header(HttpHeaders.LAST_MODIFIED,
+                            ISessionController.SessionControllerPath.SESSIONS + "/" + session.getEmail())
+                    .body(new ValidationResult(true));
+        }
+
+        return ResponseEntity.ok().body(new ValidationResult(false));
+    }
+
+    @PostMapping("/logout/{type}/{id}")
+    public ResponseEntity<String> logout(@PathVariable String type, @PathVariable String id) throws CredentialTypeException {
+        switch (type) {
+            case "login":
+                sessionService.deleteSessionByEmail(id);
+                break;
+            case "device":
+                sessionService.deleteSessionByMacAddress(id);
+                break;
+            case "uuid":
+                sessionService.deleteSessionById(UUID.fromString(id));
+                break;
+            default:
+                throw new CredentialTypeException(type);
+        }
+
+        return ResponseEntity.ok().body("User with identifier: " + id + " has been logged out.");
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@RequestBody FullLogoutDto dto) {
+    public ResponseEntity<String> logout(@RequestBody FullLogoutDto dto) {
         sessionService.deleteSessionByEmail(dto.login());
-        sessionService.deleteSessionByMacAddress(dto.macAddress());
+        if (sessionService.getSessionOrDefaultByMacAddress(dto.macAddress()) != null) {
+            sessionService.deleteSessionByMacAddress(dto.macAddress());
+        }
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body("User with login: " + dto.login() + "and device MAC address: " +
+                dto.macAddress() + "has been logged out.");
     }
 }

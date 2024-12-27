@@ -1,5 +1,31 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=IntelliJ IDEA
+## VARIABLE DECRATION
+@type=device
+@id=bla-bla
 
-###
+### GET check is session still valid
+GET http://localhost:8080/api/casso/validate/{{type}}/{{id}}
+
+### POST post log out only single sesssion
+POST http://localhost:8080/api/casso/logout/{{type}}/{{id}}
+
+### POST login user into the application
+POST http://localhost:8080/api/casso/login
+Content-Type: application/json
+
+{
+  "login": "Runner",
+  "password": "BeBe3p-@!#",
+  "macAddress": "bla-bla"
+}
+
+### POST logout user from application
+POST http://localhost:8080/api/casso/logout
+Content-Type: application/json
+
+{
+  "login": "Runner",
+  "macAddress": "bla-bla"
+}
+
+
+
