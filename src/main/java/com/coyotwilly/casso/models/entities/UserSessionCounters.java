@@ -13,7 +13,7 @@ import org.springframework.data.cassandra.core.mapping.Table;
 @Table("user_session_counter_locks")
 public class UserSessionCounters extends SessionCounters {
     @PrimaryKey
-    @Column("email")
+    @Column("login")
     @CassandraType(type = CassandraType.Name.VARCHAR)
-    private String email;
+    private String login;
 }

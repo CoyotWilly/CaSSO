@@ -16,9 +16,9 @@ import java.util.UUID;
 @AllArgsConstructor
 public class Session {
     @PrimaryKey
-    @Column("email")
+    @Column("login")
     @CassandraType(type = CassandraType.Name.TEXT)
-    private String email;
+    private String login;
 
     @Indexed
     @Column("session_id")
@@ -41,7 +41,7 @@ public class Session {
     @Override
     public String toString() {
         return String.format("{ @type = %1$s, id = %2$s, sessionId = %3$s, mac address = %4$s, IP address = %5$s, " +
-                        "lock expiration time = %6$s }", getClass().getName(), getEmail(), getSessionId().toString(),
+                        "lock expiration time = %6$s }", getClass().getName(), getLogin(), getSessionId().toString(),
                 getMacAddress(), getIpAddress(), getExpirationTime().toOffsetDateTime());
     }
 }

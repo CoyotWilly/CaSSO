@@ -16,17 +16,17 @@ import java.time.ZonedDateTime;
 public class UserSessionLocksData extends SessionLocksData {
 
     public UserSessionLocksData(String id, ZonedDateTime dateTime) {
-        email = id;
+        login = id;
         lockExpirationTime = dateTime;
     }
 
     @PrimaryKey
-    @Column("email")
+    @Column("login")
     @CassandraType(type = CassandraType.Name.VARCHAR)
-    private String email;
+    private String login;
 
     @Override
     public String getEntityId() {
-        return email;
+        return login;
     }
 }

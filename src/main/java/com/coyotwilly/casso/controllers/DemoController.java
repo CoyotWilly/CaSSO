@@ -90,7 +90,7 @@ public class DemoController implements IDemoController {
         counterService.decrement(credential.login(), userSessionCounter.getCounter(), UserSessionCounters.class);
         counterService.decrement(credential.macAddress(), userSessionCounter.getCounter(), DeviceSessionCounters.class);
         Session session = sessionService.createSession(Session.builder()
-                        .email(credential.login())
+                        .login(credential.login())
                         .sessionId(UUID.randomUUID())
                         .macAddress(credential.macAddress())
                         .expirationTime(now.plusHours(duration))
@@ -102,7 +102,7 @@ public class DemoController implements IDemoController {
     @GetMapping("/validate/{type}/{id}")
     public ResponseEntity<ValidationResult> validate(@PathVariable String type, @PathVariable String id) throws CredentialTypeException {
         Session session = switch (type) {
-            case "login" -> sessionService.getSessionOrDefaultByEmail(id);
+            case "login" -> sessionService.getSessionOrDefaultByLogin(id);
             case "device" -> sessionService.getSessionOrDefaultByMacAddress(id);
             case "uuid" -> sessionService.getSessionOrDefaultById(UUID.fromString(id));
             default -> throw new CredentialTypeException(type);
@@ -113,7 +113,7 @@ public class DemoController implements IDemoController {
             return ResponseEntity.ok()
                     .header(HttpHeaders.EXPIRES, session.getExpirationTime().toString())
                     .header(HttpHeaders.LAST_MODIFIED,
-                            ISessionController.SessionControllerPath.SESSIONS + "/" + session.getEmail())
+                            ISessionController.SessionControllerPath.SESSIONS + "/" + session.getLogin())
                     .body(new ValidationResult(true));
         }
 
@@ -124,7 +124,7 @@ public class DemoController implements IDemoController {
     public ResponseEntity<String> logout(@PathVariable String type, @PathVariable String id) throws CredentialTypeException {
         switch (type) {
             case "login":
-                sessionService.deleteSessionByEmail(id);
+                sessionService.deleteSessionByLogin(id);
                 break;
             case "device":
                 sessionService.deleteSessionByMacAddress(id);
@@ -141,7 +141,7 @@ public class DemoController implements IDemoController {
 
     @PostMapping("/logout")
     public ResponseEntity<String> logout(@RequestBody FullLogoutDto dto) {
-        sessionService.deleteSessionByEmail(dto.login());
+        sessionService.deleteSessionByLogin(dto.login());
         if (sessionService.getSessionOrDefaultByMacAddress(dto.macAddress()) != null) {
             sessionService.deleteSessionByMacAddress(dto.macAddress());
         }

@@ -27,7 +27,7 @@ public class SessionController implements ISessionController {
         try {
             return ResponseEntity.ok(sessionService.getSessionOrDefaultById(UUID.fromString(id)));
         } catch (IllegalArgumentException ignored) {
-            return ResponseEntity.ok(sessionService.getSessionOrDefaultByEmail(id));
+            return ResponseEntity.ok(sessionService.getSessionOrDefaultByLogin(id));
         }
     }
 
@@ -37,7 +37,7 @@ public class SessionController implements ISessionController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.LOCATION, IUserController.UserControllerPath.USERS + "/"
-                        + createSession.getEmail())
+                        + createSession.getLogin())
                 .body(createSession);
     }
 
@@ -47,7 +47,7 @@ public class SessionController implements ISessionController {
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.LOCATION, IUserController.UserControllerPath.USERS + "/"
-                        + update.getEmail())
+                        + update.getLogin())
                 .body(update);
     }
 
@@ -56,7 +56,7 @@ public class SessionController implements ISessionController {
         try {
             sessionService.deleteSessionById(UUID.fromString(id));
         } catch (IllegalArgumentException ignored) {
-            sessionService.deleteSessionByEmail(id);
+            sessionService.deleteSessionByLogin(id);
         }
 
         return ResponseEntity.noContent().build();

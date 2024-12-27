@@ -10,6 +10,7 @@ import java.util.concurrent.Callable;
 
 @AllArgsConstructor
 public class Task implements Callable<Void> {
+    private final int startMarker;
     private final int count;
     private final IUserService userService;
     private final List<User> users;
@@ -17,8 +18,11 @@ public class Task implements Callable<Void> {
     private final Random rand = new Random();
 
     @Override
-    public Void call() throws Exception {
+    public Void call() {
         // TODO here goes implementation of dummy data insert to Cassandra
+        for (int i = startMarker; i < startMarker + count; i++) {
+            userService.createUser(users.get(i));
+        }
 
         return null;
     }

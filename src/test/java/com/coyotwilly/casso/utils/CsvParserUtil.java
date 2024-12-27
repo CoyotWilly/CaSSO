@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.UUID;
 
 @Slf4j
 public final class CsvParserUtil {
@@ -28,11 +29,7 @@ public final class CsvParserUtil {
                     continue;
                 }
 
-                users.add(
-                        User.builder()
-                                .login(field[0])
-                                .build()
-                );
+                users.add(new User(field[0], field[1], UUID.fromString(field[2]), field[3]));
             }
         }
         catch (IOException e) {

@@ -13,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -25,7 +24,6 @@ public class UserServiceTests {
 
     private final int threadCount = 1000;
     private final int operationCount = 100;
-    private final Random random = new Random();
 
     private List<User> users;
 
@@ -43,7 +41,7 @@ public class UserServiceTests {
         List<Task> tasks = new ArrayList<>();
 
         for (int i = 0; i < threadCount; i++) {
-            tasks.add(new Task(operationCount, userService, users));
+            tasks.add(new Task(i, operationCount, userService, users));
         }
 
         try (ExecutorService executorService = Executors.newFixedThreadPool(threadCount)) {

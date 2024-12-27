@@ -47,7 +47,7 @@ public class CounterService implements ICounterService {
     }
 
     @Override
-    public <T extends SessionCounters> CounterDataDto increment(String id, Long amount, Class<T> clazz) {
+    public <T extends SessionCounters> void increment(String id, Long amount, Class<T> clazz) {
         PreparedStatement statement = cql.prepare(
                 String.format(CounterQueries.INCREMENT_COUNTER_QUERY,
                         AnnotationUtils.getTableName(clazz),
@@ -56,11 +56,11 @@ public class CounterService implements ICounterService {
         BoundStatement state = statement.bind(amount, id);
         cql.execute(state);
 
-        return new CounterDataDto(id, getCurrentCounterValue(id, clazz).getCounter());
+        new CounterDataDto(id, getCurrentCounterValue(id, clazz).getCounter());
     }
 
     @Override
-    public <T extends SessionCounters> CounterDataDto decrement(String id, Long amount, Class<T> clazz) {
+    public <T extends SessionCounters> void decrement(String id, Long amount, Class<T> clazz) {
         PreparedStatement statement = cql.prepare(
                 String.format(CounterQueries.DECREMENT_COUNTER_QUERY,
                         AnnotationUtils.getTableName(clazz),
@@ -70,6 +70,6 @@ public class CounterService implements ICounterService {
         ResultSet rs = cql.execute(state);
         cqlMapper.map(rs, clazz);
 
-        return new CounterDataDto(id, getCurrentCounterValue(id, clazz).getCounter());
+        new CounterDataDto(id, getCurrentCounterValue(id, clazz).getCounter());
     }
 }

@@ -35,19 +35,19 @@ public class SessionService implements ISessionService {
     }
 
     @Override
-    public Session getSessionOrDefaultByEmail(String email) {
-        return getSessionByEmail(email, false);
+    public Session getSessionOrDefaultByLogin(String login) {
+        return getSessionByLogin(login, false);
     }
 
     @Override
-    public Session getSessionByEmail(String email, Boolean withCheck) {
-        if (email == null || email.isEmpty()) {
+    public Session getSessionByLogin(String login, Boolean withCheck) {
+        if (login == null || login.isEmpty()) {
             throw new IllegalArgumentException("email cannot be null or empty");
         }
 
         PreparedStatement statement = cql.prepare(String.format(SessionQueries.SELECT_SESSION,
                 AnnotationUtils.getTableName(clazz), AnnotationUtils.getPrimaryKeyFieldName(clazz)));
-        BoundStatement state = statement.bind(email);
+        BoundStatement state = statement.bind(login);
 
         return cqlMapper.mapToSingle(cql.execute(state), clazz, withCheck);
     }
@@ -90,12 +90,12 @@ public class SessionService implements ISessionService {
 
     @Override
     public Session createSession(Session session) {
-        if (session.getEmail() == null || session.getEmail().isEmpty()) {
-            session.setEmail(UUID.randomUUID().toString().subSequence(0, 8) + "@cassandra.com");
+        if (session.getLogin() == null || session.getLogin().isEmpty()) {
+            session.setLogin(UUID.randomUUID().toString().subSequence(0, 8) + "@cassandra.com");
         }
 
         PreparedStatement statement = cql.prepare(CqlModificationUtils.insert(clazz));
-        BoundStatement state = statement.bind(session.getEmail(), session.getSessionId(), session.getMacAddress(),
+        BoundStatement state = statement.bind(session.getLogin(), session.getSessionId(), session.getMacAddress(),
                 session.getIpAddress(), session.getExpirationTime().toInstant());
         cql.execute(state);
 
@@ -106,14 +106,14 @@ public class SessionService implements ISessionService {
     public Session updateSession(Session session) {
         PreparedStatement statement = cql.prepare(CqlModificationUtils.update(clazz));
         BoundStatement state = statement.bind(session.getSessionId(), session.getMacAddress(),
-                session.getIpAddress(), session.getExpirationTime(), session.getEmail());
+                session.getIpAddress(), session.getExpirationTime(), session.getLogin());
         executeWithOperationResultCheck(state);
 
         return resultSession(session);
     }
 
     @Override
-    public void deleteSessionByEmail(String email) {
+    public void deleteSessionByLogin(String email) {
         if (email == null || email.isEmpty()) {
             throw new IllegalArgumentException("email cannot be null or empty");
         }
@@ -131,7 +131,7 @@ public class SessionService implements ISessionService {
             throw new IllegalArgumentException("id cannot be null or empty");
         }
         Session session = getSessionById(sessionId, true);
-        deleteSessionByEmail(session.getEmail());
+        deleteSessionByLogin(session.getLogin());
     }
 
     @Override
@@ -140,12 +140,12 @@ public class SessionService implements ISessionService {
             throw new IllegalArgumentException("id cannot be null or empty");
         }
         Session session = getSessionByMacAddress(macAddress, true);
-        deleteSessionByEmail(session.getEmail());
+        deleteSessionByLogin(session.getLogin());
     }
 
     private Session resultSession(Session session) {
-        if (session.getEmail() != null && !session.getEmail().isEmpty()) {
-            return getSessionByEmail(session.getEmail(), true);
+        if (session.getLogin() != null && !session.getLogin().isEmpty()) {
+            return getSessionByLogin(session.getLogin(), true);
         }
 
         return getSessionById(session.getSessionId(), true);

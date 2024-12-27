@@ -56,7 +56,7 @@ public class UserService implements IUserService {
 
         PreparedStatement statement = cql.prepare(CqlModificationUtils.insert(clazz));
         BoundStatement state = statement.bind(user.getLogin(), user.getName(), user.getLogin(),
-                user.getPassword(), user.getIsLocked());
+                user.getPassword());
         cql.execute(state);
 
         return getUser(user.getLogin());
@@ -66,7 +66,7 @@ public class UserService implements IUserService {
     public User updateUser(User user) {
         PreparedStatement statement = cql.prepare(CqlModificationUtils.update(clazz));
         BoundStatement state = statement.bind(user.getName(), user.getLogin(),
-                user.getPassword(), user.getIsLocked(), user.getLogin());
+                user.getPassword(), user.getLogin());
 
         ResultSet rs = cql.execute(state);
         if (cqlMapper.hasFailed(rs)) {
