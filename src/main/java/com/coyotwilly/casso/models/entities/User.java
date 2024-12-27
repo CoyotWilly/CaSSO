@@ -1,6 +1,7 @@
 package com.coyotwilly.casso.models.entities;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.cassandra.core.mapping.CassandraType;
@@ -9,6 +10,7 @@ import org.springframework.data.cassandra.core.mapping.PrimaryKey;
 import org.springframework.data.cassandra.core.mapping.Table;
 
 @Data
+@Builder
 @Table("users")
 @NoArgsConstructor
 @AllArgsConstructor
