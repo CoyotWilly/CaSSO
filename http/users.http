@@ -12,10 +12,19 @@ POST http://localhost:8080/api/casso/maintenance/users
 Content-Type: application/json
 
 {
-  "id": "PUT-aaa",
   "name": "Route Runner",
   "login": "Runner",
   "password": "BeBe3p-@!#"
+}
+
+###
+POST http://localhost:8080/api/casso/login
+Content-Type: application/json
+
+{
+  "login": "Runner",
+  "password": "BeBe3p-@!#",
+  "macAddress": "bla-bla"
 }
 
 ### PUT update existing user

@@ -49,31 +49,31 @@ public class UserService implements IUserService {
 
     @Override
     public User createUser(User user) {
-        if (user.getId() == null || user.getId().isEmpty()) {
-            user.setId(UUID.randomUUID().toString());
+        if (user.getLogin() == null || user.getLogin().isEmpty()) {
+            user.setLogin(UUID.randomUUID().toString());
         }
         user.setPassword(passwordService.encryptPassword(user.getPassword()));
 
         PreparedStatement statement = cql.prepare(CqlModificationUtils.insert(clazz));
-        BoundStatement state = statement.bind(user.getId(), user.getName(), user.getLogin(),
+        BoundStatement state = statement.bind(user.getLogin(), user.getName(), user.getLogin(),
                 user.getPassword(), user.getIsLocked());
         cql.execute(state);
 
-        return getUser(user.getId());
+        return getUser(user.getLogin());
     }
 
     @Override
     public User updateUser(User user) {
         PreparedStatement statement = cql.prepare(CqlModificationUtils.update(clazz));
         BoundStatement state = statement.bind(user.getName(), user.getLogin(),
-                user.getPassword(), user.getIsLocked(), user.getId());
+                user.getPassword(), user.getIsLocked(), user.getLogin());
 
         ResultSet rs = cql.execute(state);
         if (cqlMapper.hasFailed(rs)) {
             throw new EntityNotFoundException(clazz.getSimpleName());
         }
 
-        return getUser(user.getId());
+        return getUser(user.getLogin());
     }
 
     @Override

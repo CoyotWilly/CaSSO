@@ -16,17 +16,17 @@ import org.springframework.data.cassandra.core.mapping.Table;
 @AllArgsConstructor
 public class User {
     @PrimaryKey
-    @Column("id")
+    @Column("login")
     @CassandraType(type = CassandraType.Name.TEXT)
-    private String id;
+    private String login;
 
     @Column("name")
     @CassandraType(type = CassandraType.Name.TEXT)
     private String name;
 
-    @Column("login")
-    @CassandraType(type = CassandraType.Name.VARCHAR)
-    private String login;
+    @Column("id")
+    @CassandraType(type = CassandraType.Name.TEXT)
+    private String id;
 
     @Column("password")
     @CassandraType(type = CassandraType.Name.VARCHAR)

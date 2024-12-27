@@ -39,7 +39,7 @@ public class SessionService implements ISessionService {
             throw new IllegalArgumentException("email cannot be null or empty");
         }
 
-        PreparedStatement statement = cql.prepare(String.format(SessionQueries.SELECT_SESSION_BY_EMAIL,
+        PreparedStatement statement = cql.prepare(String.format(SessionQueries.SELECT_SESSION,
                 AnnotationUtils.getTableName(clazz), AnnotationUtils.getPrimaryKeyFieldName(clazz)));
         BoundStatement state = statement.bind(email);
 
@@ -55,6 +55,19 @@ public class SessionService implements ISessionService {
         PreparedStatement statement = cql.prepare(String.format(SessionQueries.SELECT_SESSION_BY_ID,
                 AnnotationUtils.getTableName(clazz), AnnotationUtils.getUuidColumnName(clazz)));
         BoundStatement state = statement.bind(sessionId);
+
+        return cqlMapper.mapToSingle(cql.execute(state), clazz);
+    }
+
+    @Override
+    public Session getSessionByMacAddress(String macAddress) {
+        if (macAddress == null || macAddress.isEmpty()) {
+            throw new IllegalArgumentException("mac address cannot be null or empty");
+        }
+
+        PreparedStatement statement = cql.prepare(String.format(SessionQueries.SELECT_SESSION,
+                AnnotationUtils.getTableName(clazz), AnnotationUtils.getPrimaryKeyFieldName(clazz)));
+        BoundStatement state = statement.bind(macAddress);
 
         return cqlMapper.mapToSingle(cql.execute(state), clazz);
     }
@@ -103,6 +116,15 @@ public class SessionService implements ISessionService {
         }
         Session session = getSessionById(sessionId);
         deleteSessionByEmail(session.getEmail());
+    }
+
+    @Override
+    public void deleteSessionByMacAddress(String macAddress) {
+        if (macAddress == null) {
+            throw new IllegalArgumentException("id cannot be null or empty");
+        }
+//        Session session = getSessionById(sessionId);
+//        deleteSessionByEmail(session.getMa());
     }
 
     private Session resultSession(Session session) {

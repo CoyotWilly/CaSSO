@@ -9,8 +9,10 @@ public interface ISessionService {
     List<Session> getSessions();
     Session getSessionByEmail(String email);
     Session getSessionById(UUID sessionId);
+    Session getSessionByMacAddress(String macAddress);
     Session createSession(Session session);
     Session updateSession(Session session);
     void deleteSessionByEmail(String email);
     void deleteSessionById(UUID sessionId);
+    void deleteSessionByMacAddress(String macAddress);
 }

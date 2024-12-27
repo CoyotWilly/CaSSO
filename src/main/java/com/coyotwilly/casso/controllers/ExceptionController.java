@@ -3,6 +3,7 @@ package com.coyotwilly.casso.controllers;
 import com.coyotwilly.casso.dtos.ErrorResponse;
 import com.coyotwilly.casso.exceptions.EntityNotFoundException;
 import com.datastax.oss.driver.api.mapper.MapperException;
+import jakarta.security.auth.message.AuthException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -64,5 +65,14 @@ public class ExceptionController {
                 HttpStatus.NOT_FOUND.value());
 
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity<ErrorResponse> invalidCredentials(AuthException e) {
+        ErrorResponse response = new ErrorResponse(e.getClass().getSimpleName(),
+                "Invalid credentials. Please try again later.",
+                HttpStatus.FORBIDDEN.value());
+
+        return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
     }
 }

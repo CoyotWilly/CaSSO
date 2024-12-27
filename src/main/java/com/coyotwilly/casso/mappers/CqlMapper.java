@@ -29,10 +29,10 @@ public class CqlMapper implements ICqlMapper {
                     if (row.getType(AnnotationUtils.getColumnName(field)) == DataTypes.TIMESTAMP) {
                         Instant instant = row.getInstant(AnnotationUtils.getColumnName(field));
                         if (instant == null) {
-                            continue;
+                            field.set(instance, null);
+                        } else {
+                            field.set(instance, instant.atZone(ZoneOffset.UTC));
                         }
-
-                        field.set(instance, instant.atZone(ZoneOffset.UTC));
                     } else {
                         field.set(instance, row.getObject(AnnotationUtils.getColumnName(field)));
                     }

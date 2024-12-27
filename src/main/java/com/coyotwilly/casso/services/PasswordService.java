@@ -1,5 +1,6 @@
 package com.coyotwilly.casso.services;
 
+import com.coyotwilly.casso.contracts.services.IPasswordService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -8,10 +9,11 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Objects;
 
 @Slf4j
 @Service
-public class PasswordService {
+public class PasswordService implements IPasswordService {
     @Value("${casso.password.algorithm:HmacSHA256}")
     private String algorithm;
 
@@ -30,6 +32,11 @@ public class PasswordService {
 
             return password;
         }
+    }
+
+    @Override
+    public Boolean validatePassword(String password, String encryptedPassword) {
+        return Objects.equals(encryptedPassword, encryptPassword(password));
     }
 
     private static String bytesToHex(byte[] hash) {

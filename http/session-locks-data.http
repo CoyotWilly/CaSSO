@@ -10,7 +10,7 @@ POST http://localhost:8080/api/casso/maintenance/session-locks-data?lockType={{l
 Content-Type: application/json
 
 {
-  "id": "CoyotWilly",
+  "id": "Runner",
   "expirationTime": "2019-01-21T05:36:25.966Z"
 }
 
@@ -19,7 +19,7 @@ PUT http://localhost:8080/api/casso/maintenance/session-locks-data?lockType={{lo
 Content-Type: application/json
 
 {
-  "id": "CoyotWilly",
+  "id": "Runner",
   "expirationTime": "2022-02-22T22:36:25.966Z"
 }
 

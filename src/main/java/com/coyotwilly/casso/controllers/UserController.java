@@ -29,7 +29,7 @@ public class UserController implements IUserController {
         User newUser = userService.createUser(user);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.LOCATION, UserControllerPath.USERS + "/" + newUser.getId())
+                .header(HttpHeaders.LOCATION, UserControllerPath.USERS + "/" + newUser.getLogin())
                 .body(newUser);
     }
 
@@ -37,7 +37,7 @@ public class UserController implements IUserController {
         User updateUser = userService.updateUser(user);
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.LOCATION, UserControllerPath.USERS + "/" + updateUser.getId())
+                .header(HttpHeaders.LOCATION, UserControllerPath.USERS + "/" + updateUser.getLogin())
                 .body(updateUser);
     }
 

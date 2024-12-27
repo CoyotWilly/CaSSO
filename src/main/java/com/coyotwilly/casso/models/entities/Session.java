@@ -1,6 +1,7 @@
 package com.coyotwilly.casso.models.entities;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.cassandra.core.mapping.*;
@@ -9,6 +10,7 @@ import java.time.ZonedDateTime;
 import java.util.UUID;
 
 @Data
+@Builder
 @Table("sessions")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,6 +25,7 @@ public class Session {
     @CassandraType(type = CassandraType.Name.UUID)
     private UUID sessionId = UUID.randomUUID();
 
+    @Indexed
     @Column("mac_address")
     @CassandraType(type = CassandraType.Name.VARCHAR)
     private String macAddress;
