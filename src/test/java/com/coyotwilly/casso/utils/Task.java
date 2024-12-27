@@ -3,11 +3,12 @@ package com.coyotwilly.casso.utils;
 import com.coyotwilly.casso.contracts.services.IUserService;
 import com.coyotwilly.casso.models.entities.User;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.Callable;
 
+@Slf4j
 @AllArgsConstructor
 public class Task implements Callable<Void> {
     private final int startMarker;
@@ -15,12 +16,9 @@ public class Task implements Callable<Void> {
     private final IUserService userService;
     private final List<User> users;
 
-    private final Random rand = new Random();
-
     @Override
     public Void call() {
-        // TODO here goes implementation of dummy data insert to Cassandra
-        for (int i = startMarker; i < startMarker + count; i++) {
+        for (int i = startMarker; i < count; i++) {
             userService.createUser(users.get(i));
         }
 

@@ -18,7 +18,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -43,8 +44,8 @@ public class DemoController implements IDemoController {
     @Value("${casso.cassandra.session-duration}")
     private Long duration;
 
-    @PostMapping("/login")
-    public ResponseEntity<Session> login(@RequestBody CredentialDto credential) throws Exception {
+    @Override
+    public ResponseEntity<Session> login(CredentialDto credential) throws Exception {
         User user = userService.getUser(credential.login());
         UserSessionCounters userSessionCounter = counterService
                 .getCurrentCounterValue(credential.login(), UserSessionCounters.class);
@@ -99,8 +100,8 @@ public class DemoController implements IDemoController {
         return ResponseEntity.ok().body(session);
     }
 
-    @GetMapping("/validate/{type}/{id}")
-    public ResponseEntity<ValidationResult> validate(@PathVariable String type, @PathVariable String id) throws CredentialTypeException {
+    @Override
+    public ResponseEntity<ValidationResult> validate(String type, String id) throws CredentialTypeException {
         Session session = switch (type) {
             case "login" -> sessionService.getSessionOrDefaultByLogin(id);
             case "device" -> sessionService.getSessionOrDefaultByMacAddress(id);
@@ -120,8 +121,8 @@ public class DemoController implements IDemoController {
         return ResponseEntity.ok().body(new ValidationResult(false));
     }
 
-    @PostMapping("/logout/{type}/{id}")
-    public ResponseEntity<String> logout(@PathVariable String type, @PathVariable String id) throws CredentialTypeException {
+    @Override
+    public ResponseEntity<String> logout(String type, String id) throws CredentialTypeException {
         switch (type) {
             case "login":
                 sessionService.deleteSessionByLogin(id);
@@ -139,8 +140,8 @@ public class DemoController implements IDemoController {
         return ResponseEntity.ok().body("User with identifier: " + id + " has been logged out.");
     }
 
-    @PostMapping("/logout")
-    public ResponseEntity<String> logout(@RequestBody FullLogoutDto dto) {
+    @Override
+    public ResponseEntity<String> logout(FullLogoutDto dto) {
         sessionService.deleteSessionByLogin(dto.login());
         if (sessionService.getSessionOrDefaultByMacAddress(dto.macAddress()) != null) {
             sessionService.deleteSessionByMacAddress(dto.macAddress());

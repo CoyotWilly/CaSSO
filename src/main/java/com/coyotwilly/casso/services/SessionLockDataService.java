@@ -15,6 +15,8 @@ import com.datastax.oss.driver.api.core.cql.ResultSet;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class SessionLockDataService implements ISessionLockDataService {
@@ -27,17 +29,30 @@ public class SessionLockDataService implements ISessionLockDataService {
                 String.format(SessionLockDataQueries.GET_SESSION_LOCK_DATA_BY_ID,
                         AnnotationUtils.getTableName(clazz), AnnotationUtils.getPrimaryKeyFieldNameOrDefault(clazz)));
         BoundStatement state = statement.bind(id);
+        T result = cqlMapper.mapToSingle(cql.execute(state), clazz, false);
 
-        return cqlMapper.mapToSingle(cql.execute(state), clazz);
+        if (result == null) {
+            statement = cql.prepare(CqlModificationUtils.insert(clazz));
+            state = statement.bind(id, ZonedDateTime.now().minusDays(1).toInstant());
+            cql.execute(state);
+
+            return getSessionLockDataById(id, clazz);
+        }
+
+        return result;
     }
 
     @Override
     public <T extends SessionLocksData> T createSessionLockData(T lockData, Class<T> clazz) {
-        PreparedStatement statement = cql.prepare(CqlModificationUtils.insert(clazz));
-        BoundStatement state = statement.bind(lockData.getEntityId(), lockData.getLockExpirationTime().toInstant());
+        BoundStatement state = createBatch(lockData, clazz);
         cql.execute(state);
 
         return getSessionLockDataById(lockData.getEntityId(), clazz);
+    }
+
+    @Override
+    public <T extends SessionLocksData> BoundStatement createSessionLockDataBatch(T lockData, Class<T> clazz) {
+        return createBatch(lockData, clazz);
     }
 
     @Override
@@ -64,5 +79,11 @@ public class SessionLockDataService implements ISessionLockDataService {
         if (cqlMapper.hasFailed(rs)) {
             throw new EntityNotFoundException(clazz.getSimpleName());
         }
+    }
+
+    private <T extends SessionLocksData> BoundStatement createBatch(T lockData, Class<T> clazz) {
+        PreparedStatement statement = cql.prepare(CqlModificationUtils.insert(clazz));
+
+        return statement.bind(lockData.getEntityId(), lockData.getLockExpirationTime().toInstant());
     }
 }

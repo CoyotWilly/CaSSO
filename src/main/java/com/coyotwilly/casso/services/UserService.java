@@ -3,18 +3,21 @@ package com.coyotwilly.casso.services;
 import com.coyotwilly.casso.consts.GenericQueries;
 import com.coyotwilly.casso.consts.UserQueries;
 import com.coyotwilly.casso.contracts.mappers.ICqlMapper;
+import com.coyotwilly.casso.contracts.services.ICounterService;
+import com.coyotwilly.casso.contracts.services.ISessionLockDataService;
 import com.coyotwilly.casso.contracts.services.IUserService;
 import com.coyotwilly.casso.exceptions.EntityNotFoundException;
 import com.coyotwilly.casso.models.entities.User;
+import com.coyotwilly.casso.models.entities.UserSessionCounters;
+import com.coyotwilly.casso.models.entities.UserSessionLocksData;
 import com.coyotwilly.casso.utils.AnnotationUtils;
 import com.coyotwilly.casso.utils.CqlModificationUtils;
 import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.cql.BoundStatement;
-import com.datastax.oss.driver.api.core.cql.PreparedStatement;
-import com.datastax.oss.driver.api.core.cql.ResultSet;
+import com.datastax.oss.driver.api.core.cql.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,6 +27,8 @@ public class UserService implements IUserService {
     private final Class<User> clazz = User.class;
     private final CqlSession cql;
     private final ICqlMapper cqlMapper;
+    private final ICounterService counterService;
+    private final ISessionLockDataService sessionLockDataService;
     private final PasswordService passwordService;
 
     @Override
@@ -57,7 +62,14 @@ public class UserService implements IUserService {
         PreparedStatement statement = cql.prepare(CqlModificationUtils.insert(clazz));
         BoundStatement state = statement.bind(user.getLogin(), user.getName(), user.getLogin(),
                 user.getPassword());
-        cql.execute(state);
+        BatchStatement batch = BatchStatement.builder(DefaultBatchType.LOGGED)
+                .addStatement(state)
+                .addStatement(sessionLockDataService.createSessionLockDataBatch(
+                        new UserSessionLocksData(user.getLogin(), ZonedDateTime.now().minusDays(1)), UserSessionLocksData.class))
+                        .build();
+        cql.execute(batch);
+
+        counterService.create(user.getLogin(), 0L, UserSessionCounters.class);
 
         return getUser(user.getLogin());
     }

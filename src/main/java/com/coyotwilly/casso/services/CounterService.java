@@ -25,25 +25,27 @@ public class CounterService implements ICounterService {
                 String.format(CounterQueries.GET_COUNTER_VALUE,
                         AnnotationUtils.getTableName(clazz), AnnotationUtils.getPrimaryKeyFieldNameOrDefault(clazz)));
         BoundStatement state = statement.bind(id);
+        T result = cqlMapper.mapToSingle(cql.execute(state), clazz, false);
 
-        return cqlMapper.mapToSingle(cql.execute(state), clazz);
+        if (result == null) {
+            CounterDataDto dto = create(id, 0L, clazz);
+            return getCurrentCounterValue(dto.uuid(), clazz);
+        }
+
+        return result;
     }
 
     @Override
     public <T extends SessionCounters> CounterDataDto create(String id, Long value, Class<T> clazz) {
-        PreparedStatement statement = cql.prepare(
-                String.format(CounterQueries.CREATE_COUNTER_QUERY,
-                        AnnotationUtils.getTableName(clazz),
-                        AnnotationUtils.getCounterColumnName(clazz),
-                        AnnotationUtils.getPrimaryKeyFieldName(clazz)));
-        if (value == null) {
-            value = 1L;
-        }
-
-        BoundStatement state = statement.bind(value, id);
+        BoundStatement state = prepareCreate(id, value, clazz);
         cql.execute(state);
 
         return new CounterDataDto(id, value);
+    }
+
+    @Override
+    public <T extends SessionCounters> BoundStatement createBatch(String id, Long value, Class<T> clazz) {
+        return prepareCreate(id, value, clazz);
     }
 
     @Override
@@ -71,5 +73,18 @@ public class CounterService implements ICounterService {
         cqlMapper.map(rs, clazz);
 
         new CounterDataDto(id, getCurrentCounterValue(id, clazz).getCounter());
+    }
+
+    private <T extends SessionCounters> BoundStatement prepareCreate(String id, Long value, Class<T> clazz) {
+        PreparedStatement statement = cql.prepare(
+                String.format(CounterQueries.CREATE_COUNTER_QUERY,
+                        AnnotationUtils.getTableName(clazz),
+                        AnnotationUtils.getCounterColumnName(clazz),
+                        AnnotationUtils.getPrimaryKeyFieldName(clazz)));
+        if (value == null) {
+            value = 1L;
+        }
+
+        return statement.bind(value, id);
     }
 }

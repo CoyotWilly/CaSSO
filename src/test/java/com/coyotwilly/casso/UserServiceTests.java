@@ -23,7 +23,7 @@ public class UserServiceTests {
     private IUserService userService;
 
     private final int threadCount = 1000;
-    private final int operationCount = 100;
+    private final int operationCount = 10;
 
     private List<User> users;
 
@@ -41,7 +41,7 @@ public class UserServiceTests {
         List<Task> tasks = new ArrayList<>();
 
         for (int i = 0; i < threadCount; i++) {
-            tasks.add(new Task(i, operationCount, userService, users));
+            tasks.add(new Task(i * operationCount, (i + 1) * operationCount, userService, users));
         }
 
         try (ExecutorService executorService = Executors.newFixedThreadPool(threadCount)) {

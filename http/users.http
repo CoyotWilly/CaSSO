@@ -7,7 +7,7 @@ GET http://localhost:8080/api/casso/maintenance/users
 ### GET user by id
 GET http://localhost:8080/api/casso/maintenance/users/{{id}}
 
-### POST creete new user
+### POST create new user
 POST http://localhost:8080/api/casso/maintenance/users
 Content-Type: application/json
 
