@@ -2,8 +2,9 @@ package com.coyotwilly.casso;
 
 import com.coyotwilly.casso.contracts.services.IUserService;
 import com.coyotwilly.casso.models.entities.User;
+import com.coyotwilly.casso.tasks.UserMockupTask;
 import com.coyotwilly.casso.utils.CsvParserUtil;
-import com.coyotwilly.casso.utils.Task;
+import com.coyotwilly.casso.utils.ThreadingConstants;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -22,9 +23,6 @@ public class UserServiceTests {
     @Autowired
     private IUserService userService;
 
-    private final int threadCount = 1000;
-    private final int operationCount = 10;
-
     private List<User> users;
 
     @BeforeAll
@@ -38,18 +36,20 @@ public class UserServiceTests {
 
     @Test
     public void should_insert_user_credentials() {
-        List<Task> tasks = new ArrayList<>();
+        List<UserMockupTask> userMockupTasks = new ArrayList<>();
 
-        for (int i = 0; i < threadCount; i++) {
-            tasks.add(new Task(i * operationCount, (i + 1) * operationCount, userService, users));
+        for (int i = 0; i < ThreadingConstants.ThreadCount; i++) {
+            userMockupTasks.add(new UserMockupTask(i * ThreadingConstants.OperationCount,
+                    (i + 1) * ThreadingConstants.OperationCount,
+                    userService, users));
         }
 
-        try (ExecutorService executorService = Executors.newFixedThreadPool(threadCount)) {
-            executorService.invokeAll(tasks);
+        try (ExecutorService executorService = Executors.newFixedThreadPool(ThreadingConstants.ThreadCount)) {
+            executorService.invokeAll(userMockupTasks);
         } catch (InterruptedException e) {
             Assertions.fail(e.getMessage());
         }
 
-        Assertions.assertEquals(100, operationCount);
+        Assertions.assertEquals(100, ThreadingConstants.ThreadCount);
     }
 }
