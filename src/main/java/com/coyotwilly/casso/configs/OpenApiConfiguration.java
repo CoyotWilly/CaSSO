@@ -4,6 +4,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.servers.Server;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,6 +13,9 @@ import java.util.List;
 
 @Configuration
 public class OpenApiConfiguration {
+    @Value("${server.servlet.context-path}")
+    private String path;
+
     @Bean
     public OpenAPI defineOpenApi() {
         return new OpenAPI()
@@ -26,7 +30,7 @@ public class OpenApiConfiguration {
     private List<Server> defineServers() {
         List<Server> servers = new ArrayList<>();
         Server server = new Server();
-        server.setUrl("http://localhost:8080");
+        server.setUrl("http://localhost:8080" + path);
         server.description("Demo server");
 
         servers.add(server);
